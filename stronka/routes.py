@@ -1,9 +1,7 @@
-from flask import Flask, render_template, url_for, flash, redirect
-from forms import RegistrationForm, LoginForm
-app = Flask(__name__)
-
-app.config['SECRET_KEY'] = '0862cdef2c287e81095d38a0380ff9ed'
-
+from stronka.models import User, Post
+from flask import render_template, url_for, flash, redirect
+from stronka.forms import RegistrationForm, LoginForm
+from stronka import app
 posts = [ 
     { 
         "autor": 'Kacper Fitas',
@@ -18,6 +16,7 @@ posts = [
         'data': '12.04.2020'
     }
 ]
+
 
 @app.route("/")
 @app.route("/home")
@@ -37,15 +36,16 @@ def register():
         return redirect(url_for('home'))
     return render_template('register.html', title='Register',form=form)
 
-@app.route('/login')
+@app.route('/login', methods=['GET', 'POST'])
 def login(): 
     form = LoginForm()
+    if form.validate_on_submit():
+        if form.username.data == 'Axile' and form.password.data == '123':
+            flash('Zalogowano!', 'success')
+            return redirect(url_for('home'))
+        else:
+            flash('Nie zalogowano.', 'danger')        
     return render_template('login.html', title='Login',form=form)
 @app.route('/ok')
 def problem():
     return render_template('problem.html', title='xddddd')
-
-if __name__ == '__main__':
-    app.run(debug=True)
-
-
